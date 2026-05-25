@@ -130,6 +130,11 @@ def calculate_secant():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+from flask import send_from_directory
+
+@app.route('/static/<path:filename>')
+def custom_static(filename):
+    return send_from_directory('static', filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
