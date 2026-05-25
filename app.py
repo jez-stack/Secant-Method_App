@@ -130,11 +130,26 @@ def calculate_secant():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+# Test endpoint to debug static folder
+@app.route('/test-static')
+def test_static():
+    import os
+    static_path = os.path.join(os.path.dirname(__file__), 'static')
+    exists = os.path.exists(static_path)
+    if exists:
+        files = os.listdir(static_path)
+    else:
+        files = 'NOT FOUND'
+    return f'Static folder exists: {exists}<br>Path: {static_path}<br>Files: {files}'
+
+# Guaranteed static file serving
+import os
 from flask import send_from_directory
 
 @app.route('/static/<path:filename>')
 def custom_static(filename):
-    return send_from_directory('static', filename)
+    static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+    return send_from_directory(static_folder, filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
