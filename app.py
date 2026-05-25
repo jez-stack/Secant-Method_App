@@ -148,8 +148,29 @@ from flask import send_from_directory
 
 @app.route('/static/<path:filename>')
 def custom_static(filename):
-    static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
-    return send_from_directory(static_folder, filename)
+    import os
+    from flask import Response
+    
+    # Build absolute path to the requested file
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', filename)
+    
+    # Check if file exists
+    if not os.path.exists(file_path):
+        return f"File not found: {file_path}", 404
+    
+    # Read the file content
+    with open(file_path, 'r') as f:
+        content = f.read()
+    
+    # Set correct MIME type
+    if filename.endswith('.css'):
+        mimetype = 'text/css'
+    elif filename.endswith('.js'):
+        mimetype = 'application/javascript'
+    else:
+        mimetype = 'text/plain'
+    
+    return Response(content, mimetype=mimetype)
 
 if __name__ == '__main__':
     app.run(debug=True)
